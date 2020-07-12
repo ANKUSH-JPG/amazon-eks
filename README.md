@@ -58,9 +58,91 @@ To get cluster info use cmd kubectl cluster-info
 
 ![12](https://user-images.githubusercontent.com/51692515/87247508-d4dfb280-c471-11ea-8e79-56154cdaa839.png)
 
+![13](https://user-images.githubusercontent.com/51692515/87247496-cc877780-c471-11ea-8a98-90219c17f51f.png)
+
 Below you can see load balancer is created(as whenever page refreshed a new IPaddress is shown), anyone from outside world who know the DNS can access to webserver.
 
+![14](https://user-images.githubusercontent.com/51692515/87247498-ce513b00-c471-11ea-9b14-989283f29963.png)
 
+![15](https://user-images.githubusercontent.com/51692515/87247499-cee9d180-c471-11ea-8f33-3c9f36ba6b54.png)
 
+Update code — for this we have to write one command if one has a particular webpage to be deployedkubectl cp pagename podname:/var/www/html/index.phpor it can be done by manually going inside any pod, use commandkubectl exec -it pod name — bash then changing the index.html file at the location /var/www/html/
 
+![16](https://user-images.githubusercontent.com/51692515/87247645-b928dc00-c472-11ea-80f7-2bcce9f84612.png)
+
+# Step 6: Creating a PVC(PersistentVolumeClaim) using a yaml file. Execute command kubectl create -f pvc.yml
+
+           apiVersion: v1
+           kind: PersistentVolumeClaim
+           metadata:
+               name: lwpvc1
+           spec:
+              storageClassName: gp2
+              accessModes:
+                  - ReadWriteOnce
+              resources:
+                  requests:
+                         storage: 10Gi
+                         
+
+![17](https://user-images.githubusercontent.com/51692515/87247646-b928dc00-c472-11ea-883b-c805b16e4705.png)
+
+Here you can see my lwpvc1 is created but it is in pending status ,for bound status we have to mount that pvc to the pod , so for mounting I created one pod with script “mytestforpvc.yaml” , you can also mount it in the running container by using one command kubectl edit deployment
+
+                            #for reference only
+                            apiVersion: v1
+                            kind: Pod
+                            metadata:
+                              name: mypod1
+                              labels:
+                                env: prod
+                                dc: US
+                            spec:
+                              containers:
+                              - name: "mycon1"
+                                image: "vimal13/apache-webserver-php"
+                                volumeMounts:
+                                 - name: myvolforeks
+                                   mountPath:  /var/www/html
+                              volumes:
+                              - name: myvolforeks
+                                persistentVolumeClaim: 
+                                  claimName: lwpvc1
+                                  
+        
+![18](https://user-images.githubusercontent.com/51692515/87247647-b9c17280-c472-11ea-8188-4cfbdafdf95d.png)
+
+The Pending status is now changed to Bound.
+
+![19](https://user-images.githubusercontent.com/51692515/87247648-ba5a0900-c472-11ea-8645-69d88fdfe54a.png)
+
+![20](https://user-images.githubusercontent.com/51692515/87247642-b75f1880-c472-11ea-9c34-5236fc2ba468.png)
+
+## EKS
+Spot Instances : Aws EC2 Spot Instances provides advantage of using EC2 instances which is in unused capacity in the AWS cloud. Spot Instances are available at up to a 90% discount compared to On-Demand prices.We can create spot Instances using a script in yaml format.
+2. We have two ways to manage our k8s cluster :
+* Managed by us : here we have own external k8s cluster , we can provide external load balancer providers etc.
+* Managed by AWS EKS : here we have a guarantee that AWS manage our whole cluster and EKS behind the scene integrate with some of the services of aws like EC2, EBS,ELB,EFS,Cloudwatch etc . So we can say that EKS is internally linked or tightly coupled with these services.
+3. If we have a requirement , we want our aws , also manage our worker nodes and whenever the requirements comes for vertical scaling (scale up and scale down) and horizontal scaling ( scale in and scale out ) . So we have to use serverless architecture in this kind of scenario. So aws has one service known as fargate which provide us serverless architecture but only for containers.
+* Fargate manages everything . It creates slaves i.e worker nodes on run time.
+* EKS uses fargate profile behind the scene which automatically provision the slave as per our demand.
+4. If we are running with two different worker nodes suppose node 1 and node 2 and if we have two pods running in node 1 so they have internal connectivity but one pod is also running in node 2 . So if we have a requirement for external connectivity between node 1 pods and node 2 pod so we have to provide a Container Network Interface i.e CNI plugins such as flannel which is a overlay network.
+* EKS internally use CNI and aws has its own CNI plugin i.e aws vpc CNI for k8s.
+* AWS CNI works on Elastic Network Interface i.e ENI.
+* Due to ENI network card we have to seen extra ip addresses which is known to be secondary IP’s
+Note : * Limitation of pods ( Instance type) :
+So it totally depends on network card and IP address. In t2.micro , In one instance we can’t add more than 4 NIC i.e 4 pods while in t2.small , in one instance we can’t badd more than 12 nic card i.e 12 pods.
+5. Role : It provide us internal power for communication of one service with other but it doesn’t work outside the environment . Suppose we have to connect cloud formation with EC-2 then we can use role behind the scene. But whenever the requirement of connecting the client to the cluster there role fails. In this case we have to use Identity and access management (IAM).
+6. Why we need EFS ..?
+* If suddenly load increase, we have multiple of OS running in parallel i.e horizontal scaling and all the OS is configure with the Apache webserver. Per OS we attach EBS volume, suppose you have to copy the same content from one OS to other in this case the same EBS volume cannot be connected to the other OS. If developer change any code in one OS , they have to copy that code in other OS also. If you want your code or data persistent EBS won’t help you if sudden load increase because it only provides you file system.
+* Then the role of EFS come in play.. they give you one centralized storage known as NFS :
+• NFS stands for network file system , it is easily mount to the multiple OS over the network and if developer change any code in this storage , all the OS can easily access the update code.
+• NFS is a protocol name . It gives you file system and create NFS server.
+• NFS share files and objects over the network. Here you can easily edit the file.
+7. Helm : in k8s we have a package manager or chart manager known as helm.
+* Helm hub provide us kubernetes ready apps.
+* Client always use helm command to install apps or packages.
+* Helm also have one server known as tiller ( server side component of helm ).
+* For initializing the helm we have to use “ helm init “ command.
+* We can launch Jenkins, Prometheus , grafana in one single click using helm and these tools internally connected to the kubernetes cluster.
 
