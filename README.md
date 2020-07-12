@@ -13,7 +13,27 @@
  
  # Step 1: First we have configure aws and install aws ,eksctl(why? see below) software :
  
-For connecting to aws EKS we have following ways such as webUI , CLI and terraform code also. Here we are using CLI but for connecting to aws EKS using CLI we required secret key and access key and CLI also have two ways to connect to EKS
-* aws eks command : don’t have a lot of options for customization.
-* eksctl command : it is weave community slack command. It launches cluster for us and lots of customization can be done with this command.
+  For connecting to aws EKS we have following ways such as webUI , CLI and terraform code also. Here we are using CLI but for connecting to aws EKS using CLI we required secret     key and access key and CLI also have two ways to connect to EKS
+  * aws eks command : don’t have a lot of options for customization.
+  * eksctl command : it is weave community slack command. It launches cluster for us and lots of customization can be done with this command.
+
+ ![1](https://user-images.githubusercontent.com/51692515/87247386-2fc4da00-c471-11ea-8e2c-7bf5420d5f79.png)
+ 
+ 
+ # Step 2: Create a cluster using script file in yaml format :
+ 
+ ![2](https://user-images.githubusercontent.com/51692515/87247387-30f60700-c471-11ea-9a23-25ec778f2d9a.png)
+ 
+ ** We can see eksctl program internally creating cloud formation stack for cluster automatically and we use cloud formation for auto provisioning.
+ 
+ ![3](https://user-images.githubusercontent.com/51692515/87247381-2d628000-c471-11ea-9807-6091aab9b5ab.png)
+ 
+ It takes a lot of time for creation of cluster approx. 15–20 min.
+ 
+ ![4](https://user-images.githubusercontent.com/51692515/87247383-2e93ad00-c471-11ea-8056-50afcda080d1.png)
+ 
+![5](https://user-images.githubusercontent.com/51692515/87247385-2f2c4380-c471-11ea-8cfd-e70197083baf.png)
+
+# Step 3: Next for connecting to the master, kubectl cmd require config file (.kube) having IP , username and password. AWS automatically create this file for us by using cmd aws eks update-kubeconfig — name cluster.
+
 
