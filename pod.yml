@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod1
+  labels:
+    env: prod
+    dc: US
+
+spec:
+  containers:
+  - name: "mycon1"
+    image: "vimal13/apache-webserver-php"
+    volumeMounts:
+     - name: myvolforeks
+       mountPath:  /var/www/html
+  volumes:
+  - name: myvolforeks
+    persistentVolumeClaim: 
+      claimName: lwpvc1
+
