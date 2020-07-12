@@ -36,4 +36,31 @@
 
 # Step 3: Next for connecting to the master, kubectl cmd require config file (.kube) having IP , username and password. AWS automatically create this file for us by using cmd aws eks update-kubeconfig — name cluster.
 
+![6](https://user-images.githubusercontent.com/51692515/87247500-cf826800-c471-11ea-9f24-93334b1e28f7.png)
+
+So our nodes looks somewhat like this:
+
+![7](https://user-images.githubusercontent.com/51692515/87247501-d0b39500-c471-11ea-8cf7-ddea8548ef1e.png)
+
+# Step 4: Next we create a namespace — in my case I named“addy-ns” as a namespace by a command kubectl create namespace addy-ns and for setting created namespace as a default we have one command — — — kubectl config set-context — current — namespace=addy-ns :
+
+![8](https://user-images.githubusercontent.com/51692515/87247503-d14c2b80-c471-11ea-9e91-b151de1ef9f4.png)
+
+To get cluster info use cmd kubectl cluster-info
+
+![9](https://user-images.githubusercontent.com/51692515/87247504-d1e4c200-c471-11ea-8bbc-2db7b16bd243.png)
+
+# Step 5: Create a deployment, scale it a scale it and also expose pod to the outside world with service type load balancer at port no 80:
+
+![10](https://user-images.githubusercontent.com/51692515/87247505-d27d5880-c471-11ea-9769-360f3d27b991.png)
+
+![11](https://user-images.githubusercontent.com/51692515/87247506-d3ae8580-c471-11ea-9557-d10be8f60a51.png)
+
+![12](https://user-images.githubusercontent.com/51692515/87247508-d4dfb280-c471-11ea-8e79-56154cdaa839.png)
+
+Below you can see load balancer is created(as whenever page refreshed a new IPaddress is shown), anyone from outside world who know the DNS can access to webserver.
+
+
+
+
 
