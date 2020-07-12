@@ -146,3 +146,65 @@ So it totally depends on network card and IP address. In t2.micro , In one insta
 * For initializing the helm we have to use “ helm init “ command.
 * We can launch Jenkins, Prometheus , grafana in one single click using helm and these tools internally connected to the kubernetes cluster.
 
+## Let’s move back to the practical hands-on.
+
+Begin with creating a new cluster as “addycluster”
+
+![21](https://user-images.githubusercontent.com/51692515/87247839-d5794880-c473-11ea-9b99-5857c4fa8725.png)
+
+![22](https://user-images.githubusercontent.com/51692515/87247841-d611df00-c473-11ea-9f86-ce40a0fe53bc.png)
+
+![23](https://user-images.githubusercontent.com/51692515/87247843-d6aa7580-c473-11ea-83f5-69b42f9d0922.png)
+
+![24](https://user-images.githubusercontent.com/51692515/87247844-d7430c00-c473-11ea-82d7-5e2bb9c5d36f.png)
+
+* for checking how many node groups are running you have to write one command eksctl get nodegroup — cluster addycluster in my case my cluster name is addycluster,
+>> update kubeconfig file :
+
+![25](https://user-images.githubusercontent.com/51692515/87247845-d7dba280-c473-11ea-948f-54ee011c2915.png)
+
+>> login inside the pod :
+
+![26](https://user-images.githubusercontent.com/51692515/87247846-d8743900-c473-11ea-9954-157811f9a41b.png)
+
+![27](https://user-images.githubusercontent.com/51692515/87247848-d90ccf80-c473-11ea-8108-891c0d8492e6.png)
+
+here you can see why this pod is showing — max-pods=4 , it is because of the Limitation of pods ( Instance type) : So it’s totally depend upon network card and ip address. In t2.micro , In one instance we can’t add more than 4 nic card i.e 4 pods while in t2.small , in one instance we can’t add more than 12 nic card i.e 12 pods.
+
+>> for checking how many pods is running inside the namespace kube-system we have to write one command “kubectl get pods -n kube-system”:
+
+![28](https://user-images.githubusercontent.com/51692515/87247849-d9a56600-c473-11ea-8018-aae5baba2780.png)
+
+Creating Wordpress and Mysql multitier architecture on the top EKS with the help of one single file known as kustomization.yaml :
+
+                     #for reference only
+                     apiVersion: kustomize.config.k8s.io/v1beta1
+                     kind: Kustomization
+                     secretGenerator:
+                     - name: mysql-pass
+                       literals:
+                       - password=mickey
+                     resources:
+                       - create-storage.yaml
+                       - mysql-deployment.yaml
+                       - wordpress-deployment.yaml
+                       
+![29](https://user-images.githubusercontent.com/51692515/87247850-da3dfc80-c473-11ea-860f-91cec858619c.jpg)
+
+![30](https://user-images.githubusercontent.com/51692515/87247851-dad69300-c473-11ea-8afe-6bf901530487.png)
+
+
+* here you can see the complete multitier architecture is deployed and having wordpress and mysql pods, service type loadbalancer, replica sets and persistant volume claim. now anyone from the outside world who knows my load balancer DNS name can easily access to the wordpress sites.
+
+![31](https://user-images.githubusercontent.com/51692515/87247836-d14d2b00-c473-11ea-9a5d-31d52da967fa.png)
+
+![32](https://user-images.githubusercontent.com/51692515/87247837-d316ee80-c473-11ea-8861-037e7381a0fe.png)
+
+![33](https://user-images.githubusercontent.com/51692515/87247838-d4481b80-c473-11ea-964c-52a5f6ccbced.png)
+
+
+# THIS IS HOW WE SUCESSFULLY CREATED K8S CLUSTER USING EKS AND DEPLOYED THE WORDPRESS AT FRONTEND AND MYSQL AT BACKEND .......
+
+# THANK YOU VIMAL SIR FOR TEACHING US AND GIVING US GREAT OPPORTUNITY TO LEARN AND GROW UNDER YOU ......
+
+
